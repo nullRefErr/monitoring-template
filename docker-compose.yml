@@ -1,0 +1,60 @@
+version: '3.5'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nest
+    environment:
+      - PORT=1993
+    ports:
+      - '1993:1993'
+    volumes:
+      - ./src:/app/src
+
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - '9090:9090'
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/config.ini:/etc/grafana/config.ini
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+    ports:
+      - '3000:3000'
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    volumes:
+      - ./rabbitmq/advanced.config:/etc/rabbitmq/advanced.config:ro
+      - ./rabbitmq/definitions.json:/opt/definitions.json:ro
+      - "./enabled_plugins:/var/lib/rabbitmq/enabled_plugins"
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+volumes:
+  prometheus_data: {}
+  grafana_data: {}

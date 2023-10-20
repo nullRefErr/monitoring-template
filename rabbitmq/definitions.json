@@ -1,0 +1,24 @@
+{
+  "vhosts": [
+    {
+      "name": "vhost"
+    }
+  ],
+  "users": [
+    {
+      "name": "user",
+      "password": "pass",
+      "tags": "administrator"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "user",
+      "vhost": "vhost",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*",
+      "management": ".*"
+    }
+  ]
+}
