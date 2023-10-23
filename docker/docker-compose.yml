@@ -1,17 +1,37 @@
 version: '3.5'
-
 services:
-  app:
+  publisher:
+    cpus: "0.5"
+    mem_reservation: "10M"
+    mem_limit: "250M"
     build:
-      context: .
+      context: ../packages/publisher
       dockerfile: Dockerfile
-    container_name: nest
+    container_name: nest_publisher
+    environment:
+      - PORT=1992
+    ports:
+      - '1992:1992'
+    volumes:
+      - ../packages/publisher/src:/app/src
+
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  subscriber:
+    cpus: "0.5"
+    mem_reservation: "10M"
+    mem_limit: "250M"
+    build:
+      context: ../packages/subscriber
+      dockerfile: Dockerfile
+    container_name: nest_subscriber
     environment:
       - PORT=1993
     ports:
       - '1993:1993'
     volumes:
-      - ./src:/app/src
+      - ../packages/subscriber/src:/app/src
 
     depends_on:
       rabbitmq:
