@@ -5,17 +5,24 @@ import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
   imports: [
     RabbitMQModule.forRoot(RabbitMQModule, {
       channels: {
-        sub: {
+        main: {
           default: true,
-          prefetchCount: 5000,
+          prefetchCount: 500,
+        },
+        sub: {
+          prefetchCount: 500,
         },
         pub: {
-          prefetchCount: 5000,
+          prefetchCount: 500,
         },
       },
       exchanges: [
         {
           name: 'exchange1',
+          type: 'direct',
+        },
+        {
+          name: 'exchange2',
           type: 'direct',
         },
       ],

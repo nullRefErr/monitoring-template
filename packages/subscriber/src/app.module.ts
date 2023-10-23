@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RmqModule } from './rmq.module';
 import {
@@ -7,12 +6,13 @@ import {
   makeCounterProvider,
   makeHistogramProvider,
 } from '@willsoto/nestjs-prometheus';
+import { AppHelper } from './app.helper';
 
 @Module({
   imports: [RmqModule, PrometheusModule.register()],
-  controllers: [AppController],
   providers: [
     AppService,
+    AppHelper,
     makeCounterProvider({
       name: 'messages_received_total',
       help: 'Total messages received by channel',
