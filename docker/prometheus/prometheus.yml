@@ -13,3 +13,7 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['rabbitmq:15692']
+  - job_name: 'redis'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['host.docker.internal:9121']

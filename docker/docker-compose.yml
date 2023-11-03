@@ -1,7 +1,7 @@
 version: '3.5'
 services:
   publisher:
-    cpus: "0.5"
+    cpus: 0.5
     mem_reservation: "10M"
     mem_limit: "250M"
     build:
@@ -14,12 +14,16 @@ services:
       - '1992:1992'
     volumes:
       - ../packages/publisher/src:/app/src
-
     depends_on:
       rabbitmq:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+    links:
+      - redis
+
   subscriber:
-    cpus: "0.5"
+    cpus: 0.5
     mem_reservation: "10M"
     mem_limit: "250M"
     build:
@@ -32,10 +36,14 @@ services:
       - '1993:1993'
     volumes:
       - ../packages/subscriber/src:/app/src
-
     depends_on:
       rabbitmq:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+    links:
+      - redis
+
   prometheus:
     image: prom/prometheus:latest
     volumes:
@@ -75,6 +83,32 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass password
+    volumes: 
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+  redis-exporter:
+    image: oliver006/redis_exporter
+    container_name: redis_exporter
+    ports:
+      - 9121:9121
+    environment:
+      REDIS_ADDR: "redis:6379"
+      REDIS_USER: null
+      REDIS_PASSWORD: password
+    links:
+      - redis
+      - prometheus
+
 volumes:
   prometheus_data: {}
   grafana_data: {}
+  mongodb_data: {}
+  redis_data: {}
+
