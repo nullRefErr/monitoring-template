@@ -9,7 +9,16 @@ In today's dynamic and fast-paced technological landscape, monitoring is an esse
 
 **Grafana** complements Prometheus by providing a rich and customizable platform for visualizing and analyzing metrics. With Grafana, users can create interactive and informative dashboards, making it easier to understand and respond to the behavior of their systems.
 
-  
+### Tools
+- Grafana
+- Prometheus
+- NodeJs
+- node-exporter
+- RabbitMQ
+- Redis
+- redis-exporter
+- MongoDb
+- mongodb-exporter
 
 ### Motivation
 
